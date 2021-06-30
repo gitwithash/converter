@@ -4,5 +4,5 @@ namespace App\Contracts\V1;
 
 interface ExchangeRateRepositoryContract
 {
-    public function get();
+    public function getExchangeRate(String $from, String $to);
 }

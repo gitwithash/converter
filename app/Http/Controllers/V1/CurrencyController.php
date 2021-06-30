@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Contracts\V1\CurrencyConverterContract;
 use Log;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\V1\ConvertRequest;
 
 class CurrencyController extends Controller
 {
@@ -31,8 +33,24 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\Http\Resources\Json\ResourceCollection
      */
-    public function convert(Request $request)
+    public function convert(ConvertRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $from   = $data['from'] ?? config('app.default_currency', 'EUR');
+        $amount = $data['amount'] ?? 1;
+        $to     = $data['to'];
+        $locale = $data['locale'] ?? config('app.locale');
+
+        $result = $this->converter->convert($from, $to, (float) $amount);
+
+        return response()->json(array_merge(
+            [
+                'result' => $result,
+                'result_in_locale' => $this->converter->intoLocale($result, $to, $locale),
+                'result_in_words'  => $this->converter->intoWords($result, $to, $locale),
+            ],
+            $data,
+        ));
     }
 }

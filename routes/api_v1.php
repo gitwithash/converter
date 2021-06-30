@@ -19,3 +19,5 @@ use Illuminate\Support\Facades\Route;
 // });
 //
 Route::get('/status', 'StatusController@index');
+
+Route::get('/convert', 'CurrencyController@convert');
